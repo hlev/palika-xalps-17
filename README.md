@@ -1,5 +1,5 @@
 # palika-xalps-17
-HUN1 P. Takats X-Alps 2017 (almost) LiveTracking
+HUN1 P. Takats X-Alps 2017 LiveTracking (kind of)
 
 Data comes from the offical Red Bull X-Alps site.
 We're piggybacking on their (at first sight) hairy API that allows SQL queries in URL query strings.
@@ -10,7 +10,8 @@ The engine, [Cesium](http://cesiumjs.org), is the same one that the popular 3D t
 ## Usage 
 After opening the page, the app will query for Palika's tracklog. Once available it will fly to his position and point the camera at him.
 
-If you tilt/zoom/pan and get lost, press "Find Palika" to 
+If you tilt/zoom/pan and get lost, press "Find Palika" to reset the position.
+Happy tracking, Go Palika!
 
 ## Logs
 The app keeps only 1 hour worth of logs on the server, given I used a free account at [Heroku](https://www.heroku.com/).
