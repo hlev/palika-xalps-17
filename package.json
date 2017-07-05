@@ -1,0 +1,20 @@
+{
+  "name": "palika",
+  "version": "0.4.0",
+  "description": "Red Bull X-Alps 2017 Palika Live Tracking",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "paragliding",
+    "palika",
+    "xalps",
+    "live"
+  ],
+  "dependencies": {
+    "node-static": "0.7.9"
+  },
+  "author": "Levente Huszko <levente.huszko@high-end.hu>",
+  "license": "MIT"
+}

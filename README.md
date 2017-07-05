@@ -3,9 +3,18 @@ HUN1 P. Takats X-Alps 2017 LiveTracking (kind of)
 
 Data comes from the offical Red Bull X-Alps site.
 We're piggybacking on their (at first sight) hairy API that allows SQL queries in URL query strings.
-Hopefully the web user has read rights only. Be nice.
+Hopefully the db user has read rights only. Be nice.
 
 The engine, [Cesium](http://cesiumjs.org), is the same one that the popular 3D track visualization service [Doarama](https://doarama.com/) uses and it was used for the 2015 X-Alps live tracking as well. 
+
+## Installation
+You could either deploy this to a heroku-16 stack (Node 6.11.0) or run it locally:
+
+```
+$ npm install
+$ node main.js
+```
+Visit `localhost:3000`
 
 ## Usage 
 After opening the page, the app will query for Palika's tracklog. Once available it will fly to his position and point the camera at him.
@@ -15,8 +24,9 @@ Happy tracking, Go Palika!
 
 ## Logs
 The app keeps only 1 hour worth of logs on the server, given I used a free account at [Heroku](https://www.heroku.com/).
+1 hour is ~500Kb so it could probably store more safely.
 
-The browser polls the server for data every 2 minutes and redraws the track and the green upside-down cone marker that signifies the last entry in the tracklog. Data from the last track point is shown on the data panel. If you keep the app open in the browser, it will new track data to what it already has, so you can see the whole day.
+The browser polls the server for data every 2 minutes and redraws the track and the green upside-down cone marker that signifies the last entry in the tracklog. Data from the last track point is shown on the data panel. If you keep the app open in the browser, it will concatenate new track data to what it already has, so you can see the whole day if you don't close the page.
 
 Race sections are drawn as red dotted line.
 
