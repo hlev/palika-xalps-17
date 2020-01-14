@@ -10,7 +10,7 @@ events = [
 ];
 
 function getData (event) {
-  const now = new Date().valueOf();
+  const now = new Date().now();
   https.get({
     hostname: 'airtribune.com',
     path: '/api/contest/' + event + '/last_points',
@@ -42,7 +42,7 @@ function getData (event) {
 			return JSON.stringify(row);
 		});
 
-		console.log(now, Date(current.time).valueOf());
+		console.log((now - Date(current.time)).valueOf());
 		if (points.includes(JSON.stringify(current)) === false && (now - Date(current.time).valueOf()) < 64800000) {
 			aggregatePoints.push(current);
 			aggregate[id] = aggregatePoints;
