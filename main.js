@@ -8,6 +8,7 @@ server = new stat.Server('./public', { cache: 0 });
 events = [
  1774
 ];
+aggregate = {};
 
 function getData (event) {
   const now = Date.now();
@@ -18,7 +19,7 @@ function getData (event) {
      'Accept': 'application/json, text/plain, */*'
     }
   }).on('response', function (response) {
-      var chunks = '', aggregate = {};
+      var chunks = '';
 
         response.on('data', function (chunk) {
            chunks += chunk;
