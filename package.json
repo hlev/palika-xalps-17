@@ -1,19 +1,19 @@
 {
-  "name": "palika",
-  "version": "0.4.0",
-  "description": "Red Bull X-Alps 2017 Palika Live Tracking",
+  "name": "jarnabani",
+  "version": "0.1.0",
+  "description": "Rolda Open 2020 Barna Jani 3D Live Tracking",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "paragliding",
-    "palika",
-    "xalps",
+    "jani",
+    "roldanillo",
     "live"
   ],
   "dependencies": {
-    "node-static": "0.7.9"
+    "node-static": "^0.7.11"
   },
   "author": "Levente Huszko <levente.huszko@high-end.hu>",
   "license": "MIT"

@@ -1,7 +1,18 @@
 $(function () {
-  var palika, viewer, terrainProvider, imageryProvider, initialized, sections;
+  var palika, viewer, terrainProvider, imageryProvider, initialized, pilots, sections;
 
-  sections = {
+  pilots = {
+    '1774': {
+      '80278' : {
+      	name: 'Jani',
+      	code: 'FE392',
+      	color: Cesium.Color.CHARTREUSE
+    	}
+    }
+  };
+
+  sections = [];
+  /*sections = {
     0: [13.0484000, 47.7988500, 500, 13.1109100, 47.8041300, 1600],
     1: [13.1109100, 47.8041300, 1600, 13.6313330, 46.4385000, 2800],
     2: [13.6313330, 46.4385000, 2800, 12.3331850, 47.7817340, 1500],
@@ -10,18 +21,26 @@ $(function () {
     5: [10.8647020, 45.7725530, 2300, 7.6583200, 45.9765100, 4500],
     6: [7.6583200, 45.9765100, 4500, 7.4108200, 43.7559400, 600],
     7: [7.4108200, 43.7559400, 600, 7.434, 43.7445, 0]
-  };
+  };*/
 
-  Cesium.BingMapsApi.defaultKey = 'sk.eyJ1IjoiaGxldjgwIiwiYSI6ImNqNHByNmUzbDIzajYzM3FhZGlvbHFhb2QifQ.aadTC9-Lm_1CmgrCETHvMA';
+  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkZmVhZDYxMC0xOWFhLTRmN2YtODliMi1iMjQ4NDQzMzZiODciLCJpZCI6MjEwODEsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1Nzg5NDM0NDB9.vzjN4c4XuhccCxWWIZL4Tf0H6Nw7OGXLmsKMTntW6SQ';
 
-  terrainProvider = new Cesium.CesiumTerrainProvider({
-    url: 'https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles',
+  //terrainProvider = new Cesium.CesiumTerrainProvider({
+  //  url: 'https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles',
+  //  requestVertexNormals: true
+  //});
+
+  terrainProvider = Cesium.createWorldTerrain({
     requestVertexNormals: true
   });
 
   imageryProvider = new Cesium.ArcGisMapServerImageryProvider({
     url: 'http://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer'
   });
+
+  //imageryProvider = Cesium.createWorldImagery({
+  //  style : Cesium.IonWorldImageryStyle.AERIAL_WITH_LABELS
+  //});
 
   viewer = new Cesium.Viewer('cesiumContainer', {
     animation: false,
@@ -62,98 +81,101 @@ $(function () {
   }
 
   function Palika(viewer) {
-    var url = './palika_track.json', bounding, aggregate;
+    var url, $event, eventId, bounding, aggregate;
+
+    $event = $('#event');
+    eventId = $event.val();
+    url = './rolda_aggregate_' + eventId + '.json';
 
     this.updateStats = function (row) {
       $('#stats').attr({
-        'data-utc': 'UTC: ' + row.date,
-        'data-local': new Date(row.date).toLocaleString(),
+        'data-utc': 'UTC: ' + row.time,
+        'data-local': new Date(row.time).toLocaleString(),
         'data-climb': row.climb,
         'data-alt': row.alt,
         'data-agl': Math.max(0, row.alt - row.agl).toFixed(1),
-        'data-speed': row.avg_speed,
+        'data-speed': row.h_speed,
         'data-move': row.mov_status
       });
     };
 
     this.onTrackSuccess = function (response) {
-      var me = this, last, positions, rows, newRows, track, poi;
+      var me = this, jani, str, last, positions, rows, newRows, track, poi;
 
-      if (!response.rows) {
+      if (!response['80278']) {
         return;
       }
 
-      aggregate = aggregate || response;
-      rows = aggregate.rows;
-      rows = rows.map(function (row) {
-        return JSON.stringify(row);
-      });
+      jani = response['80278'];
 
-      newRows = response.rows.filter(function (row) {
-        return rows.indexOf(JSON.stringify(row)) === -1;
-      });
-
-      aggregate.rows = aggregate.rows.concat(newRows);
-
-      last = aggregate.rows.slice().pop();
-      poi = Cesium.Cartographic.fromDegrees(last.lon, last.lat, last.alt, new Cesium.Cartographic());
+      let janiLast = Object.assign({}, jani.slice().pop());
+      poi = Cesium.Cartographic.fromDegrees(janiLast.lon, janiLast.lat, janiLast.alt, new Cesium.Cartographic());
 
       Cesium.sampleTerrain(viewer.terrainProvider, 9, [poi])
           .then(function (samples) {
-            last.agl = samples[0].height;
-            me.updateStats(last);
+	      viewer.entities.removeAll();
 
-            positions = aggregate.rows.map(function (row) {
-              return [row.lon, row.lat, row.alt];
-            }).reduce(function (a, b) {
-              return a.concat(b);
-            }, []);
+	      for (const id in response) {
+        	last = Object.assign({}, response[id].slice().pop());
 
-            track = Cesium.Cartesian3.fromDegreesArrayHeights(positions);
+                last.agl = samples[0].height;
 
-            viewer.entities.removeById('palika');
-            viewer.entities.removeById('palika-track');
-            viewer.entities.add({
-              id: 'palika-track',
-              name: 'Palika\'s track points',
-              polyline: {
-                positions: track,
-                width: 3,
-                material: Cesium.Color.CORNFLOWERBLUE
-              }
-            });
+                positions = response[id].map(function (row) {
+                  return [row.lon, row.lat, row.alt];
+                }).reduce(function (a, b) {
+                  return a.concat(b);
+                }, []);
 
-            viewer.entities.add({
-              id: 'palika',
-              name: 'Palika',
-              position: Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
-              cylinder: {
-                length: 60,
-                topRadius: 30,
-                bottomRadius: 0,
-                material: Cesium.Color.CHARTREUSE
-              }
-            });
+              track = Cesium.Cartesian3.fromDegreesArrayHeights(positions);
 
-            bounding = new Cesium.BoundingSphere(
-                Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
-                1000
-            );
+	      if (['80278'].includes(id)) {
+                me.updateStats(last);
+
+                viewer.entities.add({
+                  id: id + '-track',
+                  name: 'Jancsi\'s track points',
+                  polyline: {
+                    positions: track,
+                    width: 3,
+                    material: Cesium.Color.CORNFLOWERBLUE
+                  }
+                });
+
+                bounding = new Cesium.BoundingSphere(
+                   Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
+                   1000
+                );
+	      }
+
+              viewer.entities.add({
+                id: id,
+                name: pilots[eventId][id] ? pilots[eventId][id].name : 'N/N',
+                position: Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
+		//label: {
+		// text: pilots[eventId][id] ? pilots[eventId][id].name : 'N/N',
+		// scale: 0.5,
+		// horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+		// verticalOrigin: Cesium.VerticalOrigin.TOP
+		// },
+                cylinder: pilots[eventId][id] ? {
+                  length: 30,
+                  topRadius: 15,
+                  bottomRadius: 0,
+                  material:  pilots[eventId][id].color
+                } : {
+                	length: 10,
+			topRadius: 5,
+			bottomRadius: 5,
+			material: Cesium.Color.CADETBLUE
+		}
+              });
+          }
 
             if (!initialized) {
               initialized = true;
 
               $('#findpalika').attr('disabled', false);
               me.flyTo();
-
-              /*viewer.camera.flyTo({
-               destination: Cesium.Cartesian3.fromDegrees(last.lon, last.lat, Math.max(last.alt, 6000)),
-               orientation: {
-               heading: (last.heading + 180) % 360,
-               pitch: -0.8,
-               roll: 0.0
-               }
-               });*/
             }
           });
     };
@@ -172,5 +194,5 @@ $(function () {
   palika = new Palika(viewer);
   $('#findpalika').on('click', palika.flyTo.bind(palika));
   setTimeout(palika.getTrack.bind(palika), 0);
-  setInterval(palika.getTrack.bind(palika), 120000);
+  setInterval(palika.getTrack.bind(palika), 60000);
 });

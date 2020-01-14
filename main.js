@@ -1,29 +1,65 @@
 var stat = require('node-static'),
     http = require('http'),
+    https = require('https'),
     fs   = require('fs'),
-    server;
+    server, events, pilots;
 
 server = new stat.Server('./public', { cache: 0 });
-fs.writeFileSync('./public/palika_track.json', '{}');
+events = [
+ 1774
+];
 
-function getData () {
-  http.get({
-    hostname: 'www.redbullxalps.com',
-    path: '/api/v2/sql?q=SELECT%20*%20FROM%20(%20SELECT%20date,%20lat,%20lon,%20alt,%20mov_status,%20heading,%20avg_speed,%20climb%20%20FROM%20rbxa17_race_17%20WHERE%20date%20%3E=%20(%272017-07-02T09:30:00Z%27)::TIMESTAMP%20%20AND%20date%20%3C=%20(%272018-01-01T00:00:44Z%27)::TIMESTAMP%20ORDER%20BY%20date%20DESC%20LIMIT%203600)%20desclist%20ORDER%20BY%20date%20ASC',
+function getData (event) {
+  https.get({
+    hostname: 'airtribune.com',
+    path: '/api/contest/' + event + '/last_points',
     headers: {
      'Accept': 'application/json, text/plain, */*'
     }
   }).on('response', function (response) {
-      var chunks = '';
+      var chunks = '', aggregate = {};
 
         response.on('data', function (chunk) {
            chunks += chunk;
         });
 
         response.on('end', function () {
-          fs.writeFileSync('./public/palika_track.json', chunks);
+	  var lastPoints, current, points, aggregatePoints;
+
+	  try {
+	    lastPoints = JSON.parse(chunks);
+
+            for (const id in lastPoints) {
+		current = lastPoints[id].last_point;
+
+		if (!current) {
+		  continue;
+		}
+
+ 	        aggregatePoints = aggregate[id] || [];
+		points = aggregatePoints.map(row => {
+			return JSON.stringify(row);
+		});
+
+		if (points.includes(JSON.stringify(current)) === false) {
+			aggregatePoints.push(current);
+			aggregate[id] = aggregatePoints;
+		}
+	    }
+
+            fs.writeFileSync('./public/rolda_aggregate_' + event + '.json', JSON.stringify(aggregate));
+            fs.writeFileSync('./public/rolda_' + event + '.json', chunks);
+          }
+	  catch (err) {
+	    console.error(err);
+            return;
+	  }
         });
   });
+}
+
+function processEvents() {
+  events.forEach(event => getData(event));
 }
 
 http.createServer(function (request, response) {
@@ -31,8 +67,8 @@ http.createServer(function (request, response) {
     server.serve(request, response);
   }).resume();
 }).listen(process.env.PORT || 3000).on('listening', function () {
-  getData();
-  setInterval(getData, 120000);
+  processEvents();
+  setInterval(processEvents, 25000);
 });
 
 

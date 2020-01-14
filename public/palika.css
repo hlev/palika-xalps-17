@@ -16,6 +16,13 @@ html, body, #cesiumContainer {
 	left: 200px;
 }
 
+#event {
+       	position: fixed;
+       	margin: 10px;
+       	top: 50px;
+       	left: 200px;
+}
+
 #stats::before {
 	content: attr(data-utc)"\A Local: "attr(data-local)"\A Speed (avg): "attr(data-speed)" km/h\A Climb: "attr(data-climb)" m/s \A Alt: "attr(data-alt)" m \A AGL (approx.): "attr(data-agl)" m \A"attr(data-move);
 	white-space: pre;
