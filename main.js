@@ -42,6 +42,7 @@ function getData (event) {
 			return JSON.stringify(row);
 		});
 
+		console.log(now, Date(current.time).valueOf());
 		if (points.includes(JSON.stringify(current)) === false && (now - Date(current.time).valueOf()) < 64800000) {
 			aggregatePoints.push(current);
 			aggregate[id] = aggregatePoints;
