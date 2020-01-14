@@ -28,7 +28,7 @@ This is a single data point for Jani in Day 3 - Task 2:
 ```
 
 The URL for this data is in the format `https://airtribune.com/api/contest/<event_id>/last_points`.
-The `event_id` can be observed in the URL of the official Airtribune 2D tracking, when an event is in progress (i.e. "Watch Live"), but is not known upfront.
+The `event_id` can be observed from the URL of these requests in the official Airtribune 2D tracking, when an event is in progress (i.e. "Watch Live").
 Then we assume that the pilot's string ID remains the same across events, in this case `"80278"` for Jani.
 
 Should that change, it needs to be adjusted in a few places in source code.
