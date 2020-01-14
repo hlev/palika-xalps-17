@@ -35,7 +35,7 @@ $(function () {
   });
 
   imageryProvider = new Cesium.ArcGisMapServerImageryProvider({
-    url: 'http://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer'
+    url: 'https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer'
   });
 
   //imageryProvider = Cesium.createWorldImagery({
