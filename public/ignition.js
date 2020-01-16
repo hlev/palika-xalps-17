@@ -4,9 +4,28 @@ $(function () {
   pilots = {
     '1774': {
       '80278' : {
-      	name: 'Jani',
+      	name: 'B.Jani',
       	code: 'FE392',
-      	color: Cesium.Color.CHARTREUSE
+      	color: Cesium.Color.CHARTREUSE,
+	trackColor: Cesium.Color.GREENYELLOW
+    	},
+      '12345' : {
+      	name: 'H.Adel',
+      	code: 'FE392',
+      	color: Cesium.Color.HOTPINK,
+	trackColor: Cesium.Color.LIGHTCORAL
+    	},
+      '80334' : {
+      	name: 'T.Pal',
+      	code: 'FE443',
+      	color: Cesium.Color.DODGERBLUE,
+	trackColor: Cesium.Color.CORNFLOWERBLUE
+    	},
+      '80272' : {
+      	name: 'H.Bence',
+      	code: 'FE809',
+      	color: Cesium.Color.DARKORANGE,
+	trackColor: Cesium.Color.GOLD
     	}
     }
   };
@@ -113,6 +132,8 @@ $(function () {
 
       Cesium.sampleTerrain(viewer.terrainProvider, 9, [poi])
           .then(function (samples) {
+              let marker;
+
 	      viewer.entities.removeAll();
 
 	      for (const id in response) {
@@ -128,48 +149,57 @@ $(function () {
 
               track = Cesium.Cartesian3.fromDegreesArrayHeights(positions);
 
-	      if (['80278'].includes(id)) {
-                me.updateStats(last);
-
-                viewer.entities.add({
-                  id: id + '-track',
-                  name: 'Jancsi\'s track points',
-                  polyline: {
-                    positions: track,
-                    width: 3,
-                    material: Cesium.Color.CORNFLOWERBLUE
-                  }
-                });
+              if (id === '80278') {
+		me.updateStats(last);
 
                 bounding = new Cesium.BoundingSphere(
                    Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
                    1000
                 );
-	      }
+              }
 
-              viewer.entities.add({
-                id: id,
-                name: pilots[eventId][id] ? pilots[eventId][id].name : 'N/N',
-                position: Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
-		//label: {
-		// text: pilots[eventId][id] ? pilots[eventId][id].name : 'N/N',
-		// scale: 0.5,
-		// horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
-		// verticalOrigin: Cesium.VerticalOrigin.TOP
-		// },
-                cylinder: pilots[eventId][id] ? {
-                  length: 30,
-                  topRadius: 15,
-                  bottomRadius: 0,
-                  material:  pilots[eventId][id].color
-                } : {
-                	length: 10,
-			topRadius: 5,
-			bottomRadius: 5,
-			material: Cesium.Color.CADETBLUE
-		}
-              });
-          }
+	      if (['80278', '80272', '80334'].includes(id)) {
+                viewer.entities.add({
+                  id: id + '-track',
+                  name: (pilots[eventId][id] ? pilots[eventId][id].name : 'N/N') + '\'s track',
+                  polyline: {
+                    positions: track,
+                    width: 3,
+                    material: pilots[eventId][id] ? pilots[eventId][id].trackColor : Cesium.Color.POWDERBLUE
+                  }
+                });
+
+		marker = {
+                  id: id,
+                  name: pilots[eventId][id] ? pilots[eventId][id].name : 'N/N',
+                  position: Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
+                  label: {
+                    text: pilots[eventId][id] ? pilots[eventId][id].name : 'N/N',
+                    horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+                    verticalOrigin: Cesium.VerticalOrigin.TOP
+                   },
+                  cylinder: {
+                    length: 30,
+                    topRadius: 15,
+                    bottomRadius: 0,
+                    material:  pilots[eventId][id] ? pilots[eventId][id].color : Cesium.Color.CADETBLUE
+                  }
+                };
+	      } else {
+                marker = {
+                  id: id,
+                  name: 'N/N',
+                  position: Cesium.Cartesian3.fromDegrees(last.lon, last.lat, last.alt),
+                  cylinder: {
+                    length: 10,
+		    topRadius: 5,
+		    bottomRadius: 5,
+		    material: Cesium.Color.CADETBLUE
+                 }
+		};
+              }
+              viewer.entities.add(marker);
+            }
 
             if (!initialized) {
               initialized = true;
