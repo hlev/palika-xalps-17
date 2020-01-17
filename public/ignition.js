@@ -158,7 +158,7 @@ $(function () {
                 );
               }
 
-	      if (['80278', '80272', '80334'].includes(id)) {
+	      if (['80278', '80272', '80334', '80229'].includes(id)) {
                 viewer.entities.add({
                   id: id + '-track',
                   name: (pilots[eventId][id] ? pilots[eventId][id].name : 'N/N') + '\'s track',
