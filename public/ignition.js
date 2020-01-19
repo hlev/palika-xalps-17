@@ -1,5 +1,5 @@
 $(function () {
-  var palika, viewer, terrainProvider, imageryProvider, initialized, pilots, sections;
+  var palika, viewer, terrainProvider, imageryProvider, initialized, pilots, keys, sections, $events;
 
   pilots = {
     '1774': {
@@ -10,13 +10,13 @@ $(function () {
 	trackColor: Cesium.Color.GREENYELLOW
     	},
       '80229' : {
-      	name: 'H.Adel',
+      	name: 'H.Adél',
       	code: 'FE715',
       	color: Cesium.Color.HOTPINK,
 	trackColor: Cesium.Color.LIGHTCORAL
     	},
       '80334' : {
-      	name: 'T.Pal',
+      	name: 'T.Pál',
       	code: 'FE443',
       	color: Cesium.Color.DODGERBLUE,
 	trackColor: Cesium.Color.CORNFLOWERBLUE
@@ -29,6 +29,8 @@ $(function () {
     	}
     }
   };
+
+  keys = Object.keys(pilots['1774']);
 
   sections = [];
   /*sections = {
@@ -105,6 +107,7 @@ $(function () {
     $event = $('#event');
     eventId = $event.val();
     url = './rolda_aggregate_' + eventId + '.json';
+    eventId = '1774';
 
     this.updateStats = function (row) {
       $('#stats').attr({
@@ -135,7 +138,6 @@ $(function () {
               let marker;
 
 	      viewer.entities.removeAll();
-
 	      for (const id in response) {
         	last = Object.assign({}, response[id].slice().pop());
 
@@ -158,14 +160,14 @@ $(function () {
                 );
               }
 
-	      if (['80278', '80272', '80334', '80229'].includes(id)) {
+	      if (keys.includes(id)) {
                 viewer.entities.add({
                   id: id + '-track',
                   name: (pilots[eventId][id] ? pilots[eventId][id].name : 'N/N') + '\'s track',
                   polyline: {
-                    positions: track,
-                    width: 3,
-                    material: pilots[eventId][id] ? pilots[eventId][id].trackColor : Cesium.Color.POWDERBLUE
+                   positions: track,
+                    width: 3, 
+		  material: pilots[eventId][id] ? pilots[eventId][id].trackColor : Cesium.Color.POWDERBLUE
                   }
                 });
 
@@ -215,14 +217,20 @@ $(function () {
     };
 
     this.getTrack = function () {
+      let url = './rolda_aggregate_' + $event.val() + '.json';
       $.getJSON(url)
           .done(this.onTrackSuccess.bind(this))
           .fail(console.log.bind(console, 'Request failed!'));
     };
   }
 
+  $events = $('#event');
+  $events.on('change', e => {
+	palika.getTrack();
+  });
+
   palika = new Palika(viewer);
   $('#findpalika').on('click', palika.flyTo.bind(palika));
   setTimeout(palika.getTrack.bind(palika), 0);
-  setInterval(palika.getTrack.bind(palika), 60000);
+  // setInterval(palika.getTrack.bind(palika), 60000);
 });
