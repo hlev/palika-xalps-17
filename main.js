@@ -6,7 +6,7 @@ var stat = require('node-static'),
 
 server = new stat.Server('./public', { cache: 0 });
 events = [
- 1774
+ 2236
 ];
 aggregate = {};
 

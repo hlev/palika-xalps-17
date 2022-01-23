@@ -1,5 +1,6 @@
 $(function () {
   var palika, viewer, terrainProvider, imageryProvider, initialized, pilots, keys, sections, $events;
+  const jancsi = '111381';
 
   pilots = {
     '1774': {
@@ -27,10 +28,36 @@ $(function () {
       	color: Cesium.Color.DARKORANGE,
 	trackColor: Cesium.Color.GOLD
     	}
+    },
+    '2236': {
+      '111381' : {
+        name: 'B.Jani',
+        code: 'flymaster-353161078890749',
+        color: Cesium.Color.CHARTREUSE,
+        trackColor: Cesium.Color.GREENYELLOW
+        },
+      '111412' : {
+        name: 'G.Ricsi',
+        code: 'flymaster-357520076109889',
+        color: Cesium.Color.HOTPINK,
+        trackColor: Cesium.Color.LIGHTCORAL
+        },
+      '111606' : {
+        name: 'F.Szilárd',
+        code: 'flymaster-353161078903559',
+        color: Cesium.Color.DODGERBLUE,
+        trackColor: Cesium.Color.CORNFLOWERBLUE
+        },
+      '111410' : {
+        name: 'H.Bence',
+        code: 'flymaster-359316077118849',
+        color: Cesium.Color.DARKORANGE,
+        trackColor: Cesium.Color.GOLD
+        }
     }
   };
 
-  keys = Object.keys(pilots['1774']);
+  keys = Object.keys(pilots['2236']);
 
   sections = [];
   /*sections = {
@@ -107,7 +134,7 @@ $(function () {
     $event = $('#event');
     eventId = $event.val();
     url = './rolda_aggregate_' + eventId + '.json';
-    eventId = '1774';
+    eventId = '2236';
 
     this.updateStats = function (row) {
       $('#stats').attr({
@@ -124,11 +151,11 @@ $(function () {
     this.onTrackSuccess = function (response) {
       var me = this, jani, str, last, positions, rows, newRows, track, poi;
 
-      if (!response['80278']) {
+      if (!response[jancsi]) {
         return;
       }
 
-      jani = response['80278'];
+      jani = response[jancsi];
 
       let janiLast = Object.assign({}, jani.slice().pop());
       poi = Cesium.Cartographic.fromDegrees(janiLast.lon, janiLast.lat, janiLast.alt, new Cesium.Cartographic());
@@ -151,7 +178,7 @@ $(function () {
 
               track = Cesium.Cartesian3.fromDegreesArrayHeights(positions);
 
-              if (id === '80278') {
+              if (id === jancsi) {
 		me.updateStats(last);
 
                 bounding = new Cesium.BoundingSphere(

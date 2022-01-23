@@ -1,7 +1,7 @@
 {
   "name": "jarnabani",
   "version": "0.1.0",
-  "description": "Rolda Open 2020 Barna Jani 3D Live Tracking",
+  "description": "Rolda Open 2022 Barna Jani 3D Live Tracking",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,3 +18,4 @@
   "author": "Levente Huszko <levente.huszko@high-end.hu>",
   "license": "MIT"
 }
+
