@@ -193,7 +193,7 @@ $(function () {
                   name: (pilots[eventId][id] ? pilots[eventId][id].name : 'N/N') + '\'s track',
                   polyline: {
                    positions: track,
-                    width: 3, 
+                    width: 3,
 		  material: pilots[eventId][id] ? pilots[eventId][id].trackColor : Cesium.Color.POWDERBLUE
                   }
                 });
