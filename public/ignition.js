@@ -259,5 +259,5 @@ $(function () {
   palika = new Palika(viewer);
   $('#findpalika').on('click', palika.flyTo.bind(palika));
   setTimeout(palika.getTrack.bind(palika), 0);
-  // setInterval(palika.getTrack.bind(palika), 60000);
+  setInterval(palika.getTrack.bind(palika), 60000);
 });
